@@ -1,9 +1,14 @@
-.welcome {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  text-align: center;
-  gap: 12px;
+.auth-error {
+  color: #d33;
+  margin: 0;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #4a7dff;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: inherit;
 }

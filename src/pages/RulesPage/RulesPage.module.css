@@ -1,0 +1,66 @@
+.rulesPage {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.header button {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  text-align: left;
+}
+
+.columns section {
+  flex: 1 1 320px;
+}
+
+.earnHeading {
+  color: #2a8f4f;
+}
+
+.loseHeading {
+  color: #d33;
+}
+
+.ruleList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ruleList li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.earnPoints {
+  color: #2a8f4f;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.losePoints {
+  color: #d33;
+  font-weight: 600;
+  white-space: nowrap;
+}

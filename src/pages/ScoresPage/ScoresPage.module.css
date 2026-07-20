@@ -1,0 +1,153 @@
+.scoresPage {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.header button {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.scoresTable {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+.scoresTable th,
+.scoresTable td {
+  border: 1px solid #ccc;
+  padding: 8px 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.scoresTable thead th {
+  background: rgba(74, 125, 255, 0.1);
+  font-weight: 600;
+}
+
+.nameHeader,
+.nameCell {
+  text-align: left;
+  position: sticky;
+  left: 0;
+  background: var(--bg, #fff);
+}
+
+.nameHeader {
+  background: rgba(74, 125, 255, 0.1);
+}
+
+.totalCell {
+  font-weight: 700;
+}
+
+.votedOutCell {
+  background: rgba(211, 51, 51, 0.15);
+  color: #d33;
+  font-weight: 700;
+}
+
+.wonCell {
+  background: rgba(42, 143, 79, 0.15);
+  color: #2a8f4f;
+  font-weight: 700;
+}
+
+.clickableCell {
+  cursor: pointer;
+}
+
+.clickableCell:hover {
+  outline: 2px solid #4a7dff;
+  outline-offset: -2px;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modal {
+  background: var(--bg, #fff);
+  border-radius: 8px;
+  padding: 24px;
+  width: 100%;
+  max-width: 360px;
+  max-height: 90vh;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.modal h2 {
+  margin: 0 0 16px;
+  font-size: 1.1rem;
+}
+
+.modal button {
+  margin-top: 16px;
+  padding: 8px 16px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.eventList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.eventList li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.eventCount {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.modalTotal {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #ccc;
+  font-weight: 700;
+}
+
+.earnPoints {
+  color: #2a8f4f;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.losePoints {
+  color: #d33;
+  font-weight: 600;
+  white-space: nowrap;
+}

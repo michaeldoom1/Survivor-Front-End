@@ -1,0 +1,201 @@
+.picksPage {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 16px 120px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.header button {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.banner {
+  border: 1px solid #4a7dff;
+  background: rgba(74, 125, 255, 0.1);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.banner p {
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.bannerNote {
+  font-weight: 400 !important;
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 8px !important;
+}
+
+.cardList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: left;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.editButton {
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: none;
+}
+
+.cardSelected {
+  border-color: #4a7dff;
+  box-shadow: 0 0 0 1px #4a7dff;
+}
+
+.photo {
+  flex: 0 0 160px;
+}
+
+.photo img {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.photoPlaceholder {
+  width: 160px;
+  height: 160px;
+  border-radius: 6px;
+  background: #eee;
+  color: #888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.info {
+  flex: 1 1 260px;
+  min-width: 220px;
+}
+
+.info h3 {
+  margin: 0;
+}
+
+.meta {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0 0 8px;
+}
+
+.bio {
+  margin: 0 0 12px;
+}
+
+.pickButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pickButtons button {
+  padding: 8px 12px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: none;
+  font-size: 0.9rem;
+}
+
+.pickButtons button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.selectedButton {
+  background: #4a7dff !important;
+  color: #fff;
+  border-color: #4a7dff !important;
+}
+
+.video {
+  flex: 0 0 280px;
+}
+
+.video iframe {
+  width: 280px;
+  height: 158px;
+  border: none;
+  border-radius: 6px;
+}
+
+.videoPlaceholder {
+  width: 280px;
+  height: 158px;
+  border-radius: 6px;
+  background: #eee;
+  color: #888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.submitBar {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  background: var(--bg, #fff);
+  border-top: 1px solid #ccc;
+  padding: 16px;
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  font-size: 0.9rem;
+}
+
+.submitBar button {
+  padding: 10px 24px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.submitBar button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
