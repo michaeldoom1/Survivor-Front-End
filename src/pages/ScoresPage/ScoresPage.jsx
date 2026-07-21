@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { fetchSeasons, deleteSeason } from '../../api/seasons'
 import { fetchContestantScores } from '../../api/contestants'
+import { fetchPicksBySeason } from '../../api/picks'
 import EpisodeDetailModal from './EpisodeDetailModal'
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog'
 import SeasonForm from '../../components/SeasonForm/SeasonForm'
@@ -14,6 +15,7 @@ function ScoresPage() {
   const { user } = useAuth()
   const [season, setSeason] = useState(null)
   const [contestants, setContestants] = useState([])
+  const [standings, setStandings] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [selectedCell, setSelectedCell] = useState(null)
@@ -35,10 +37,14 @@ function ScoresPage() {
           return null
         }
         if (!cancelled) setSeason(matchedSeason)
-        return fetchContestantScores(matchedSeason.id)
+        return Promise.all([fetchContestantScores(matchedSeason.id), fetchPicksBySeason(matchedSeason.id)])
       })
       .then((data) => {
-        if (data && !cancelled) setContestants(data)
+        if (data && !cancelled) {
+          const [contestantScores, picks] = data
+          setContestants(contestantScores)
+          setStandings(picks)
+        }
       })
       .catch((err) => {
         if (!cancelled) setError(err.message)
@@ -123,6 +129,8 @@ function ScoresPage() {
     return b.total_points - a.total_points
   })
 
+  const sortedStandings = [...standings].sort((a, b) => b.total_points - a.total_points)
+
   return (
     <div className={styles.scoresPage}>
       <div className={styles.header}>
@@ -141,6 +149,40 @@ function ScoresPage() {
       </div>
 
       {deleteSeasonError && <p className="auth-error">{deleteSeasonError}</p>}
+
+      {sortedStandings.length > 0 && (
+        <div className={styles.tableWrapper}>
+          <h2>League Standings</h2>
+          <table className={styles.standingsTable}>
+            <thead>
+              <tr>
+                <th className={styles.nameHeader}>User</th>
+                <th>Male Pick</th>
+                <th>Female Pick</th>
+                <th>Golden Goose (2x)</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedStandings.map((standing) => (
+                <tr key={standing.user_id}>
+                  <td className={styles.nameCell}>{standing.user_name}</td>
+                  <td>
+                    {standing.male_contestant.name} ({standing.male_contestant.points})
+                  </td>
+                  <td>
+                    {standing.female_contestant.name} ({standing.female_contestant.points})
+                  </td>
+                  <td>
+                    {standing.golden_goose_contestant.name} ({standing.golden_goose_contestant.points})
+                  </td>
+                  <td className={styles.totalCell}>{standing.total_points}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {contestants.length === 0 || episodeNumbers.length === 0 ? (
         <p>No scores have been recorded for this season yet.</p>

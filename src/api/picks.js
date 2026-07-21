@@ -4,6 +4,10 @@ export function fetchMyPicks() {
   return apiRequest('/picks')
 }
 
+export function fetchPicksBySeason(seasonId) {
+  return apiRequest(`/picks/by_season?season_id=${seasonId}`)
+}
+
 export function createPick(pick) {
   return apiRequest('/picks', {
     method: 'POST',

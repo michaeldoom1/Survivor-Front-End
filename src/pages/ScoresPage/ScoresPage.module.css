@@ -31,23 +31,36 @@
   overflow-x: auto;
 }
 
-.scoresTable {
+.scoresTable,
+.standingsTable {
   border-collapse: collapse;
   width: 100%;
   font-size: 0.9rem;
 }
 
 .scoresTable th,
-.scoresTable td {
+.scoresTable td,
+.standingsTable th,
+.standingsTable td {
   border: 1px solid #ccc;
   padding: 8px 10px;
   text-align: center;
   white-space: nowrap;
 }
 
-.scoresTable thead th {
+.scoresTable thead th,
+.standingsTable thead th {
   background: rgba(74, 125, 255, 0.1);
   font-weight: 600;
+}
+
+.tableWrapper h2 {
+  font-size: 1.1rem;
+  margin: 0 0 12px;
+}
+
+.tableWrapper + .tableWrapper {
+  margin-top: 32px;
 }
 
 .nameHeader,
