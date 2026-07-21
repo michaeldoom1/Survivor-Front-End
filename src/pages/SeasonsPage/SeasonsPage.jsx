@@ -3,8 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { fetchSeasons } from '../../api/seasons'
 import ContestantForm from '../../components/ContestantForm/ContestantForm'
-import { PICKS_DEADLINE, PICKS_SEASON_NUMBER } from '../../constants/picks'
+import SeasonForm from '../../components/SeasonForm/SeasonForm'
+import ProfileForm from '../../components/ProfileForm/ProfileForm'
 import styles from './SeasonsPage.module.css'
+
+function isPickable(season, now) {
+  return Boolean(season.start_air_date) && new Date(season.start_air_date) > now
+}
 
 function SeasonsPage() {
   const navigate = useNavigate()
@@ -14,6 +19,8 @@ function SeasonsPage() {
   const [error, setError] = useState('')
   const [now, setNow] = useState(() => new Date())
   const [showCreateContestant, setShowCreateContestant] = useState(false)
+  const [showCreateSeason, setShowCreateSeason] = useState(false)
+  const [showEditProfile, setShowEditProfile] = useState(false)
 
   useEffect(() => {
     fetchSeasons()
@@ -27,22 +34,22 @@ function SeasonsPage() {
     return () => clearInterval(interval)
   }, [])
 
-  const picksClosed = now >= PICKS_DEADLINE
   const sortedSeasons = [...seasons].sort((a, b) => a.number - b.number)
-  const pickableSeason = seasons.find((season) => season.number === PICKS_SEASON_NUMBER)
+  const pickableSeason = seasons
+    .filter((season) => isPickable(season, now))
+    .sort((a, b) => new Date(a.start_air_date) - new Date(b.start_air_date))[0]
 
   function handleSeasonClick(season) {
-    const picksOpenForSeason = season.number === PICKS_SEASON_NUMBER && !picksClosed
-    navigate(picksOpenForSeason ? `/contestants/${season.number}` : `/scores/${season.number}`)
+    navigate(isPickable(season, now) ? `/contestants/${season.number}` : `/scores/${season.number}`)
   }
 
   return (
     <div className={styles.seasonsPage}>
       <header className={styles.seasonsHeader}>
-        <h1>The Survivor League</h1>
-        <h2>OUTWIT OUTLAST OUTPLAY</h2>
+        <img src="/logo.png" alt="Survivor Fantasy League" className={styles.logo} />
         <div>
-          <span>{user.email}</span>
+          <span>{user.first_name} {user.last_name}</span>
+          <button onClick={() => setShowEditProfile(true)}>Edit Profile</button>
           <button onClick={() => navigate('/rules')}>Rules</button>
           <button onClick={logout}>Log Out</button>
         </div>
@@ -51,6 +58,7 @@ function SeasonsPage() {
       {user.admin && (
         <div className={styles.adminActions}>
           <button onClick={() => setShowCreateContestant(true)}>Create Contestant</button>
+          <button onClick={() => setShowCreateSeason(true)}>Create Season</button>
         </div>
       )}
 
@@ -67,20 +75,17 @@ function SeasonsPage() {
         ))}
       </ul>
 
-      <div className={styles.picksButtonWrapper}>
-        <button
-          className={styles.picksButton}
-          disabled={picksClosed || !pickableSeason}
-          onClick={() => navigate(`/contestants/${PICKS_SEASON_NUMBER}`)}
-          title={
-            picksClosed
-              ? 'Picks are closed for this season.'
-              : `Picks close September 21, 2026 at 8:00 PM ET`
-          }
-        >
-          {picksClosed ? 'Picks Closed' : `Pick Your Contestants for Season ${PICKS_SEASON_NUMBER}`}
-        </button>
-      </div>
+      {pickableSeason && (
+        <div className={styles.picksButtonWrapper}>
+          <button
+            className={styles.picksButton}
+            onClick={() => navigate(`/contestants/${pickableSeason.number}`)}
+            title={`Picks close ${new Date(pickableSeason.start_air_date).toLocaleString()}`}
+          >
+            Pick Your Contestants for Season {pickableSeason.number}
+          </button>
+        </div>
+      )}
 
       {showCreateContestant && (
         <ContestantForm
@@ -88,6 +93,20 @@ function SeasonsPage() {
           onCancel={() => setShowCreateContestant(false)}
           onSaved={() => setShowCreateContestant(false)}
         />
+      )}
+
+      {showCreateSeason && (
+        <SeasonForm
+          onCancel={() => setShowCreateSeason(false)}
+          onSaved={(season) => {
+            setSeasons((prev) => [...prev, season])
+            setShowCreateSeason(false)
+          }}
+        />
+      )}
+
+      {showEditProfile && (
+        <ProfileForm onCancel={() => setShowEditProfile(false)} onSaved={() => setShowEditProfile(false)} />
       )}
     </div>
   )

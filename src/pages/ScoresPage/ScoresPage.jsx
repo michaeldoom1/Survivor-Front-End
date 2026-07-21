@@ -1,18 +1,26 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { fetchSeasons } from '../../api/seasons'
+import { useAuth } from '../../context/AuthContext'
+import { fetchSeasons, deleteSeason } from '../../api/seasons'
 import { fetchContestantScores } from '../../api/contestants'
 import EpisodeDetailModal from './EpisodeDetailModal'
+import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog'
+import SeasonForm from '../../components/SeasonForm/SeasonForm'
 import styles from './ScoresPage.module.css'
 
 function ScoresPage() {
   const { seasonNumber } = useParams()
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [season, setSeason] = useState(null)
   const [contestants, setContestants] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [selectedCell, setSelectedCell] = useState(null)
+  const [showDeleteSeason, setShowDeleteSeason] = useState(false)
+  const [deletingSeason, setDeletingSeason] = useState(false)
+  const [deleteSeasonError, setDeleteSeasonError] = useState('')
+  const [showEditSeason, setShowEditSeason] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -67,6 +75,18 @@ function ScoresPage() {
     ...new Set(contestants.flatMap((c) => c.episode_scores.map((es) => es.episode_number))),
   ].sort((a, b) => a - b)
 
+  async function handleDeleteSeason() {
+    setDeletingSeason(true)
+    setDeleteSeasonError('')
+    try {
+      await deleteSeason(season.id)
+      navigate('/')
+    } catch (err) {
+      setDeleteSeasonError(err.message)
+      setDeletingSeason(false)
+    }
+  }
+
   const EXIT_EVENTS = ['Getting voted out', 'Medical evacuation', 'Losing a fire-making challenge']
 
   function exitEpisode(contestant) {
@@ -108,7 +128,19 @@ function ScoresPage() {
       <div className={styles.header}>
         <button onClick={() => navigate('/')}>&larr; Back to Seasons</button>
         <h1>Season {season.number} Scores</h1>
+        {user.admin && (
+          <>
+            <button className={styles.editSeasonButton} onClick={() => setShowEditSeason(true)}>
+              Edit Season
+            </button>
+            <button className={styles.deleteSeasonButton} onClick={() => setShowDeleteSeason(true)}>
+              Delete Season
+            </button>
+          </>
+        )}
       </div>
+
+      {deleteSeasonError && <p className="auth-error">{deleteSeasonError}</p>}
 
       {contestants.length === 0 || episodeNumbers.length === 0 ? (
         <p>No scores have been recorded for this season yet.</p>
@@ -170,6 +202,28 @@ function ScoresPage() {
           episodeNumber={selectedCell.episode}
           events={selectedCell.events}
           onClose={() => setSelectedCell(null)}
+        />
+      )}
+
+      {showDeleteSeason && (
+        <ConfirmDialog
+          title="Delete Season"
+          message={`Are you sure you want to delete Season ${season.number}? This cannot be undone.`}
+          confirmLabel="Delete Season"
+          submitting={deletingSeason}
+          onCancel={() => setShowDeleteSeason(false)}
+          onConfirm={handleDeleteSeason}
+        />
+      )}
+
+      {showEditSeason && (
+        <SeasonForm
+          season={season}
+          onCancel={() => setShowEditSeason(false)}
+          onSaved={(updatedSeason) => {
+            setSeason(updatedSeason)
+            setShowEditSeason(false)
+          }}
         />
       )}
     </div>

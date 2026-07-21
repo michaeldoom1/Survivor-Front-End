@@ -24,6 +24,7 @@ function LoginPage({ onSwitchToSignup }) {
 
   return (
     <div className={styles.authPage}>
+      <img src="/logo.png" alt="Survivor Fantasy League" className={styles.logo} />
       <h1>Log In</h1>
       <form className={styles.authForm} onSubmit={handleSubmit}>
         <label htmlFor="login-email">Email</label>

@@ -11,6 +11,12 @@
   margin-bottom: 24px;
 }
 
+.logo {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+}
+
 .seasonsHeader div {
   display: flex;
   align-items: center;
@@ -20,6 +26,7 @@
 .adminActions {
   display: flex;
   justify-content: center;
+  gap: 8px;
   margin-bottom: 16px;
 }
 

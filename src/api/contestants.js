@@ -21,3 +21,9 @@ export function updateContestant(id, contestant) {
     body: { contestant },
   })
 }
+
+export function deleteContestant(id) {
+  return apiRequest(`/contestants/${id}`, {
+    method: 'DELETE',
+  })
+}

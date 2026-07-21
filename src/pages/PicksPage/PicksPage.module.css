@@ -16,6 +16,17 @@
   cursor: pointer;
 }
 
+.editSeasonButton {
+  margin-left: auto;
+}
+
+.deleteSeasonButton {
+  border: 1px solid #d33;
+  border-radius: 6px;
+  background: none;
+  color: #d33;
+}
+
 .banner {
   border: 1px solid #4a7dff;
   background: rgba(74, 125, 255, 0.1);
@@ -67,6 +78,17 @@
   border: 1px solid #ccc;
   border-radius: 6px;
   background: none;
+}
+
+.deleteButton {
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border: 1px solid #d33;
+  border-radius: 6px;
+  background: none;
+  color: #d33;
+  line-height: 1;
 }
 
 .cardSelected {

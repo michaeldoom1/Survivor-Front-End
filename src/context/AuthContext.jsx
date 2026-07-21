@@ -27,8 +27,8 @@ export function AuthProvider({ children }) {
     return data.user
   }
 
-  async function signup(email, password, passwordConfirmation) {
-    const data = await authApi.signup(email, password, passwordConfirmation)
+  async function signup(fields) {
+    const data = await authApi.signup(fields)
     setUser(data.user)
     return data.user
   }
@@ -38,7 +38,13 @@ export function AuthProvider({ children }) {
     setUser(null)
   }
 
-  const value = { user, loading, login, signup, logout }
+  async function updateProfile(fields) {
+    const data = await authApi.updateProfile(fields)
+    setUser(data.user)
+    return data.user
+  }
+
+  const value = { user, loading, login, signup, logout, updateProfile }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

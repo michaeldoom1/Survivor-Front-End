@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { fetchSeasons } from '../../api/seasons'
-import { fetchContestants } from '../../api/contestants'
+import { fetchSeasons, deleteSeason } from '../../api/seasons'
+import { fetchContestants, deleteContestant } from '../../api/contestants'
 import { fetchMyPicks, createPick, updatePick } from '../../api/picks'
 import ContestantCard from './ContestantCard'
 import ContestantForm from '../../components/ContestantForm/ContestantForm'
-import { PICKS_DEADLINE } from '../../constants/picks'
+import SeasonForm from '../../components/SeasonForm/SeasonForm'
+import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog'
 import styles from './PicksPage.module.css'
 
 const EMPTY_SELECTIONS = {
@@ -29,6 +30,10 @@ function PicksPage() {
   const [submitError, setSubmitError] = useState('')
   const [editingContestant, setEditingContestant] = useState(null)
   const [now, setNow] = useState(() => new Date())
+  const [showDeleteSeason, setShowDeleteSeason] = useState(false)
+  const [deletingSeason, setDeletingSeason] = useState(false)
+  const [deleteSeasonError, setDeleteSeasonError] = useState('')
+  const [showEditSeason, setShowEditSeason] = useState(false)
 
   useEffect(() => {
     const interval = setInterval(() => setNow(new Date()), 30_000)
@@ -95,7 +100,28 @@ function PicksPage() {
     setEditingContestant(null)
   }
 
-  const picksLocked = now >= PICKS_DEADLINE
+  async function handleContestantDelete(contestant) {
+    try {
+      await deleteContestant(contestant.id)
+      setContestants((prev) => prev.filter((c) => c.id !== contestant.id))
+    } catch (err) {
+      window.alert(`Failed to delete ${contestant.name}: ${err.message}`)
+    }
+  }
+
+  async function handleDeleteSeason() {
+    setDeletingSeason(true)
+    setDeleteSeasonError('')
+    try {
+      await deleteSeason(season.id)
+      navigate('/')
+    } catch (err) {
+      setDeleteSeasonError(err.message)
+      setDeletingSeason(false)
+    }
+  }
+
+  const picksLocked = !season?.start_air_date || now >= new Date(season.start_air_date)
   const canSubmit =
     !picksLocked &&
     selections.male_contestant_id &&
@@ -141,7 +167,19 @@ function PicksPage() {
       <div className={styles.header}>
         <button onClick={() => navigate('/')}>&larr; Back to Seasons</button>
         <h1>Season {season.number} Picks</h1>
+        {user.admin && (
+          <>
+            <button className={styles.editSeasonButton} onClick={() => setShowEditSeason(true)}>
+              Edit Season
+            </button>
+            <button className={styles.deleteSeasonButton} onClick={() => setShowDeleteSeason(true)}>
+              Delete Season
+            </button>
+          </>
+        )}
       </div>
+
+      {deleteSeasonError && <p className="auth-error">{deleteSeasonError}</p>}
 
       {myPick && (
         <div className={styles.banner}>
@@ -170,6 +208,7 @@ function PicksPage() {
             onToggle={togglePick}
             isAdmin={user.admin}
             onEdit={() => setEditingContestant(contestant)}
+            onDelete={() => handleContestantDelete(contestant)}
             picksLocked={picksLocked}
           />
         ))}
@@ -198,6 +237,28 @@ function PicksPage() {
             {picksLocked ? 'Picks Locked' : submitting ? 'Saving...' : myPick ? 'Update Picks' : 'Submit Picks'}
           </button>
         </div>
+      )}
+
+      {showDeleteSeason && (
+        <ConfirmDialog
+          title="Delete Season"
+          message={`Are you sure you want to delete Season ${season.number}? This cannot be undone.`}
+          confirmLabel="Delete Season"
+          submitting={deletingSeason}
+          onCancel={() => setShowDeleteSeason(false)}
+          onConfirm={handleDeleteSeason}
+        />
+      )}
+
+      {showEditSeason && (
+        <SeasonForm
+          season={season}
+          onCancel={() => setShowEditSeason(false)}
+          onSaved={(updatedSeason) => {
+            setSeason(updatedSeason)
+            setShowEditSeason(false)
+          }}
+        />
       )}
     </div>
   )

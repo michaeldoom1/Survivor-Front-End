@@ -16,6 +16,17 @@
   cursor: pointer;
 }
 
+.editSeasonButton {
+  margin-left: auto;
+}
+
+.deleteSeasonButton {
+  border: 1px solid #d33;
+  border-radius: 6px;
+  background: none;
+  color: #d33;
+}
+
 .tableWrapper {
   overflow-x: auto;
 }

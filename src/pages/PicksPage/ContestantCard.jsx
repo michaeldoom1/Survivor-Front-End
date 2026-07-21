@@ -10,7 +10,7 @@ function initials(name) {
     .toUpperCase()
 }
 
-function ContestantCard({ contestant, selections, onToggle, isAdmin, onEdit, picksLocked }) {
+function ContestantCard({ contestant, selections, onToggle, isAdmin, onEdit, onDelete, picksLocked }) {
   const isMaleSelected = selections.male_contestant_id === contestant.id
   const isFemaleSelected = selections.female_contestant_id === contestant.id
   const isGoldenSelected = selections.golden_goose_contestant_id === contestant.id
@@ -22,6 +22,12 @@ function ContestantCard({ contestant, selections, onToggle, isAdmin, onEdit, pic
   const details = [contestant.tribename, contestant.occupation, contestant.age && `Age ${contestant.age}`]
     .filter(Boolean)
     .join(' · ')
+
+  function handleDeleteClick() {
+    if (window.confirm(`Delete ${contestant.name}? This cannot be undone.`)) {
+      onDelete()
+    }
+  }
 
   return (
     <div className={`${styles.card} ${isSelected ? styles.cardSelected : ''}`}>
@@ -39,6 +45,16 @@ function ContestantCard({ contestant, selections, onToggle, isAdmin, onEdit, pic
           {isAdmin && (
             <button className={styles.editButton} onClick={onEdit}>
               Edit
+            </button>
+          )}
+          {isAdmin && (
+            <button
+              className={styles.deleteButton}
+              onClick={handleDeleteClick}
+              aria-label={`Delete ${contestant.name}`}
+              title="Delete contestant"
+            >
+              🗑
             </button>
           )}
         </div>
