@@ -37,7 +37,14 @@ function ScoresPage() {
           return null
         }
         if (!cancelled) setSeason(matchedSeason)
-        return Promise.all([fetchContestantScores(matchedSeason.id), fetchPicksBySeason(matchedSeason.id)])
+
+        const seasonHasStarted =
+          Boolean(matchedSeason.start_air_date) && new Date(matchedSeason.start_air_date) <= new Date()
+
+        return Promise.all([
+          fetchContestantScores(matchedSeason.id),
+          seasonHasStarted ? fetchPicksBySeason(matchedSeason.id) : Promise.resolve([]),
+        ])
       })
       .then((data) => {
         if (data && !cancelled) {
@@ -129,6 +136,7 @@ function ScoresPage() {
     return b.total_points - a.total_points
   })
 
+  const seasonHasStarted = Boolean(season.start_air_date) && new Date(season.start_air_date) <= new Date()
   const sortedStandings = [...standings].sort((a, b) => b.total_points - a.total_points)
 
   return (
@@ -150,7 +158,7 @@ function ScoresPage() {
 
       {deleteSeasonError && <p className="auth-error">{deleteSeasonError}</p>}
 
-      {sortedStandings.length > 0 && (
+      {seasonHasStarted && sortedStandings.length > 0 && (
         <div className={styles.tableWrapper}>
           <h2>League Standings</h2>
           <table className={styles.standingsTable}>
