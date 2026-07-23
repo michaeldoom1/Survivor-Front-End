@@ -175,3 +175,27 @@
   font-weight: 600;
   white-space: nowrap;
 }
+
+.recapLinks {
+  margin-bottom: 32px;
+}
+
+.recapLinks h2 {
+  font-size: 1.1rem;
+  margin: 0 0 12px;
+}
+
+.tabStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tab {
+  padding: 8px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+}

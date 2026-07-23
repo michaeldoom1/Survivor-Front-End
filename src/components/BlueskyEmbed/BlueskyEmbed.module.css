@@ -1,0 +1,22 @@
+.iframe {
+  width: 100%;
+  max-width: 1100px;
+  border: none;
+  display: block;
+}
+
+.loading,
+.error {
+  padding: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #666;
+  max-width: 1100px;
+}
+
+.error a {
+  display: inline-block;
+  margin-top: 6px;
+  color: #4a7dff;
+}

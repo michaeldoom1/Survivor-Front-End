@@ -1,0 +1,82 @@
+.entryPage {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.header button {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.header h1 {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.episodeNav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.episodeNav button {
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.entryTable {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.85rem;
+}
+
+.entryTable th,
+.entryTable td {
+  border: 1px solid #ccc;
+  padding: 6px 8px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.entryTable thead th {
+  background: rgba(74, 125, 255, 0.1);
+  font-weight: 600;
+}
+
+.eventHeader,
+.eventCell {
+  text-align: left;
+  position: sticky;
+  left: 0;
+  background: var(--bg, #fff);
+}
+
+.eventHeader {
+  background: rgba(74, 125, 255, 0.1);
+}
+
+.eventPoints {
+  color: #666;
+  font-weight: 400;
+}
+
+.countInput {
+  width: 48px;
+  padding: 4px;
+  text-align: center;
+  font-size: 0.85rem;
+}

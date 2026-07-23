@@ -1,0 +1,246 @@
+.recapPage {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.header button {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.header h1 {
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.tabStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tab,
+.tabActive {
+  padding: 8px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.tabActive {
+  background: #4a7dff;
+  border-color: #4a7dff;
+  color: #fff;
+  font-weight: 600;
+}
+
+.panel {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.empty {
+  text-align: center;
+  color: #666;
+}
+
+.empty button {
+  margin-top: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.editButton {
+  float: right;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.recapText {
+  white-space: pre-wrap;
+  line-height: 1.5;
+  margin: 0 0 16px;
+}
+
+.superlatives {
+  margin-bottom: 16px;
+}
+
+.superlatives h2 {
+  font-size: 0.95rem;
+  margin: 0 0 6px;
+}
+
+.superlativesList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.superlativesList li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  line-height: 1.5;
+}
+
+.superlativesList li::before {
+  content: '🏆';
+  flex-shrink: 0;
+}
+
+.memeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.blueskyList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 700px) {
+  .blueskyList {
+    grid-template-columns: 1fr;
+  }
+}
+
+.blueskyCard {
+  position: relative;
+  width: 100%;
+}
+
+.memeCard {
+  position: relative;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.memeCard img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  border-radius: 4px;
+  background: #eee;
+}
+
+.memeCaption {
+  font-size: 0.85rem;
+  margin: 8px 0 4px;
+}
+
+.memeSource {
+  font-size: 0.75rem;
+  color: #4a7dff;
+  text-decoration: none;
+}
+
+.memeSource:hover {
+  text-decoration: underline;
+}
+
+.removeMeme {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #d33;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.addMemeForm {
+  border-top: 1px solid #ccc;
+  padding-top: 16px;
+}
+
+.addMemeForm h3 {
+  font-size: 0.95rem;
+  margin: 0 0 4px;
+}
+
+.addMemeForm label {
+  display: block;
+  font-size: 0.85rem;
+  margin: 10px 0 4px;
+}
+
+.addMemeForm > input {
+  width: 100%;
+  padding: 8px;
+  font-size: 0.9rem;
+}
+
+.hint {
+  font-size: 0.8rem;
+  color: #666;
+  margin: 4px 0 0;
+}
+
+.formDivider {
+  font-size: 0.8rem;
+  color: #999;
+  text-align: center;
+  margin: 16px 0;
+  position: relative;
+}
+
+.formDivider::before,
+.formDivider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  border-top: 1px solid #ddd;
+}
+
+.formDivider::before {
+  left: 0;
+}
+
+.formDivider::after {
+  right: 0;
+}
+
+.addMemeGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.addMemeGrid input {
+  padding: 8px;
+  font-size: 0.9rem;
+}
+
+.addMemeForm button {
+  padding: 8px 16px;
+  cursor: pointer;
+}

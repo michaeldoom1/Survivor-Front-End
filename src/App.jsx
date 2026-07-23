@@ -10,6 +10,8 @@ import SeasonsPage from './pages/SeasonsPage/SeasonsPage'
 import PicksPage from './pages/PicksPage/PicksPage'
 import RulesPage from './pages/RulesPage/RulesPage'
 import ScoresPage from './pages/ScoresPage/ScoresPage'
+import EpisodeRecapPage from './pages/EpisodeRecapPage/EpisodeRecapPage'
+import ScoreEntryPage from './pages/ScoreEntryPage/ScoreEntryPage'
 
 function AuthGate() {
   const { user, loading } = useAuth()
@@ -30,6 +32,8 @@ function AuthGate() {
       <Route path="/" element={<SeasonsPage />} />
       <Route path="/contestants/:seasonNumber" element={<PicksPage />} />
       <Route path="/scores/:seasonNumber" element={<ScoresPage />} />
+      <Route path="/scores/:seasonNumber/episodes/:episodeNumber" element={<EpisodeRecapPage />} />
+      <Route path="/scores/:seasonNumber/entry/:episodeNumber" element={<ScoreEntryPage />} />
       <Route path="/rules" element={<RulesPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

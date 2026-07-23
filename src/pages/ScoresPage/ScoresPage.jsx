@@ -146,9 +146,16 @@ function ScoresPage() {
         <h1>Season {season.number} Scores</h1>
         {user.admin && (
           <>
-            <button className={styles.editSeasonButton} onClick={() => setShowEditSeason(true)}>
-              Edit Season
+            <button
+              className={styles.editSeasonButton}
+              onClick={() => {
+                const nextEpisode = episodeNumbers.length > 0 ? Math.max(...episodeNumbers) + 1 : 1
+                navigate(`/scores/${season.number}/entry/${nextEpisode}`)
+              }}
+            >
+              Enter Scores
             </button>
+            <button onClick={() => setShowEditSeason(true)}>Edit Season</button>
             <button className={styles.deleteSeasonButton} onClick={() => setShowDeleteSeason(true)}>
               Delete Season
             </button>
@@ -157,6 +164,23 @@ function ScoresPage() {
       </div>
 
       {deleteSeasonError && <p className="auth-error">{deleteSeasonError}</p>}
+
+      {episodeNumbers.length > 0 && (
+        <div className={styles.recapLinks}>
+          <h2>Weekly Recaps</h2>
+          <div className={styles.tabStrip}>
+            {episodeNumbers.map((ep) => (
+              <button
+                key={ep}
+                className={styles.tab}
+                onClick={() => navigate(`/scores/${season.number}/episodes/${ep}`)}
+              >
+                Ep {ep}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {seasonHasStarted && sortedStandings.length > 0 && (
         <div className={styles.tableWrapper}>
