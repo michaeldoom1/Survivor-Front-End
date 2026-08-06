@@ -211,7 +211,7 @@ function EpisodeRecapPage() {
     setShowPollForm(false)
   }
 
-  function handlePollVoted(updatedPoll) {
+  function handlePollUpdated(updatedPoll) {
     setPolls((prev) => prev.map((p) => (p.id === updatedPoll.id ? updatedPoll : p)))
   }
 
@@ -257,6 +257,33 @@ function EpisodeRecapPage() {
                 Edit Recap
               </button>
             )}
+
+            <div className={styles.polls}>
+              {polls.map((poll) => (
+                <Poll
+                  key={poll.id}
+                  poll={poll}
+                  isAdmin={user?.admin}
+                  isLoggedIn={Boolean(user)}
+                  seasonNumber={seasonNumber}
+                  onVoted={handlePollUpdated}
+                  onCommented={handlePollUpdated}
+                  onDelete={handlePollDelete}
+                />
+              ))}
+
+              {user?.admin && !showPollForm && (
+                <button onClick={() => setShowPollForm(true)}>+ Add Poll</button>
+              )}
+
+              {user?.admin && showPollForm && (
+                <PollForm
+                  episodePostId={post.id}
+                  onCreated={handlePollCreated}
+                  onCancel={() => setShowPollForm(false)}
+                />
+              )}
+            </div>
 
             {post.recap && <p className={styles.recapText}>{post.recap}</p>}
             {post.superlatives && (
@@ -321,31 +348,6 @@ function EpisodeRecapPage() {
                 ))}
               </div>
             )}
-
-            <div className={styles.polls}>
-              {polls.map((poll) => (
-                <Poll
-                  key={poll.id}
-                  poll={poll}
-                  isAdmin={user?.admin}
-                  canVote={Boolean(user)}
-                  onVoted={handlePollVoted}
-                  onDelete={handlePollDelete}
-                />
-              ))}
-
-              {user?.admin && !showPollForm && (
-                <button onClick={() => setShowPollForm(true)}>+ Add Poll</button>
-              )}
-
-              {user?.admin && showPollForm && (
-                <PollForm
-                  episodePostId={post.id}
-                  onCreated={handlePollCreated}
-                  onCancel={() => setShowPollForm(false)}
-                />
-              )}
-            </div>
 
             {user?.admin && <AddMemeForm episodePostId={post.id} onAdded={handleMemeAdded} />}
           </>

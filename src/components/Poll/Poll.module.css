@@ -40,14 +40,6 @@
   cursor: pointer;
 }
 
-.voteForm textarea {
-  padding: 8px;
-  font-size: 0.9rem;
-  font-family: inherit;
-  resize: vertical;
-  margin-top: 4px;
-}
-
 .voteForm button {
   align-self: flex-start;
   padding: 8px 16px;
@@ -110,4 +102,30 @@
 .comments li {
   font-size: 0.9rem;
   line-height: 1.4;
+}
+
+.noComments {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0 0 8px;
+}
+
+.commentForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.commentForm textarea {
+  padding: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.commentForm button {
+  align-self: flex-start;
+  padding: 8px 16px;
+  cursor: pointer;
 }
