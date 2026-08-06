@@ -26,6 +26,11 @@ function RulesPage() {
         <h1>Scoring Rules</h1>
       </div>
 
+      <p className={styles.picksSummary}>
+        You pick 1 male contestant and 1 female contestant and a Golden Goose. Your Golden Goose can be male or
+        female and earns double points.
+      </p>
+
       {loading && <p>Loading rules...</p>}
       {error && <p className="auth-error">{error}</p>}
 
