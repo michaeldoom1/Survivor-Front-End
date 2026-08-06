@@ -144,7 +144,7 @@ function ScoresPage() {
       <div className={styles.header}>
         <button onClick={() => navigate('/')}>&larr; Back to Seasons</button>
         <h1>Season {season.number} Scores</h1>
-        {user.admin && (
+        {user?.admin && (
           <>
             <button
               className={styles.editSeasonButton}

@@ -1,0 +1,65 @@
+.pollForm {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pollForm h3 {
+  font-size: 0.95rem;
+  margin: 0 0 4px;
+}
+
+.pollForm label {
+  font-size: 0.85rem;
+  margin-top: 6px;
+}
+
+.pollForm input[type='text'] {
+  padding: 8px;
+  font-size: 0.9rem;
+}
+
+.optionRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.optionRow input {
+  flex: 1;
+}
+
+.optionRow button {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: #d33;
+  color: #fff;
+  cursor: pointer;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.addOption {
+  align-self: flex-start;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  background: none;
+  border: 1px dashed #ccc;
+  border-radius: 6px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.actions button {
+  padding: 8px 16px;
+  cursor: pointer;
+}

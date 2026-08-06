@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import './App.css'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
@@ -13,27 +12,40 @@ import ScoresPage from './pages/ScoresPage/ScoresPage'
 import EpisodeRecapPage from './pages/EpisodeRecapPage/EpisodeRecapPage'
 import ScoreEntryPage from './pages/ScoreEntryPage/ScoreEntryPage'
 
-function AuthGate() {
+function RequireAuth({ children }) {
   const { user, loading } = useAuth()
-  const [view, setView] = useState('login')
+  const location = useLocation()
 
   if (loading) return <p>Loading...</p>
+  if (!user) return <Navigate to="/login" state={{ from: location }} replace />
 
-  if (!user) {
-    return view === 'login' ? (
-      <LoginPage onSwitchToSignup={() => setView('signup')} />
-    ) : (
-      <CreateUserPage onSwitchToLogin={() => setView('login')} />
-    )
-  }
+  return children
+}
 
+function AppRoutes() {
   return (
     <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<CreateUserPage />} />
       <Route path="/" element={<SeasonsPage />} />
-      <Route path="/contestants/:seasonNumber" element={<PicksPage />} />
+      <Route
+        path="/contestants/:seasonNumber"
+        element={
+          <RequireAuth>
+            <PicksPage />
+          </RequireAuth>
+        }
+      />
       <Route path="/scores/:seasonNumber" element={<ScoresPage />} />
       <Route path="/scores/:seasonNumber/episodes/:episodeNumber" element={<EpisodeRecapPage />} />
-      <Route path="/scores/:seasonNumber/entry/:episodeNumber" element={<ScoreEntryPage />} />
+      <Route
+        path="/scores/:seasonNumber/entry/:episodeNumber"
+        element={
+          <RequireAuth>
+            <ScoreEntryPage />
+          </RequireAuth>
+        }
+      />
       <Route path="/rules" element={<RulesPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
@@ -46,7 +58,7 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <ThemeToggle />
-          <AuthGate />
+          <AppRoutes />
         </BrowserRouter>
       </AuthProvider>
     </ThemeProvider>

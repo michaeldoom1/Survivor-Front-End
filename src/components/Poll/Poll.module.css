@@ -1,0 +1,113 @@
+.pollCard {
+  position: relative;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.question {
+  font-size: 1rem;
+  margin: 0 0 12px;
+  padding-right: 24px;
+}
+
+.removePoll {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #d33;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.voteForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.optionLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.voteForm textarea {
+  padding: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  resize: vertical;
+  margin-top: 4px;
+}
+
+.voteForm button {
+  align-self: flex-start;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.myOption {
+  font-weight: 600;
+}
+
+.resultLabel {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.barTrack {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: #eee;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  background: #4a7dff;
+}
+
+.comments {
+  margin-top: 16px;
+  border-top: 1px solid #ccc;
+  padding-top: 12px;
+}
+
+.comments h4 {
+  font-size: 0.85rem;
+  margin: 0 0 8px;
+}
+
+.comments ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.comments li {
+  font-size: 0.9rem;
+  line-height: 1.4;
+}

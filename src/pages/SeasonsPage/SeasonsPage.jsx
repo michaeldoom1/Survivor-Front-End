@@ -48,14 +48,23 @@ function SeasonsPage() {
       <header className={styles.seasonsHeader}>
         <img src="/logo.png" alt="Survivor Fantasy League" className={styles.logo} />
         <div>
-          <span>{user.first_name} {user.last_name}</span>
-          <button onClick={() => setShowEditProfile(true)}>Edit Profile</button>
-          <button onClick={() => navigate('/rules')}>Rules</button>
-          <button onClick={logout}>Log Out</button>
+          {user ? (
+            <>
+              <span>{user.first_name} {user.last_name}</span>
+              <button onClick={() => setShowEditProfile(true)}>Edit Profile</button>
+              <button onClick={() => navigate('/rules')}>Rules</button>
+              <button onClick={logout}>Log Out</button>
+            </>
+          ) : (
+            <>
+              <button onClick={() => navigate('/rules')}>Rules</button>
+              <button onClick={() => navigate('/login')}>Log In</button>
+            </>
+          )}
         </div>
       </header>
 
-      {user.admin && (
+      {user?.admin && (
         <div className={styles.adminActions}>
           <button onClick={() => setShowCreateContestant(true)}>Create Contestant</button>
           <button onClick={() => setShowCreateSeason(true)}>Create Season</button>

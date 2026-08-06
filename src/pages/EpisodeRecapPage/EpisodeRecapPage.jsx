@@ -5,8 +5,11 @@ import { fetchSeasons } from '../../api/seasons'
 import { fetchContestantScores } from '../../api/contestants'
 import { fetchEpisodePosts } from '../../api/episodePosts'
 import { createMeme, deleteMeme } from '../../api/memes'
+import { fetchPolls, deletePoll } from '../../api/polls'
 import EpisodePostForm from '../../components/EpisodePostForm/EpisodePostForm'
 import BlueskyEmbed from '../../components/BlueskyEmbed/BlueskyEmbed'
+import Poll from '../../components/Poll/Poll'
+import PollForm from '../../components/PollForm/PollForm'
 import styles from './EpisodeRecapPage.module.css'
 
 function AddMemeForm({ episodePostId, onAdded }) {
@@ -96,6 +99,11 @@ function EpisodeRecapPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [showEditForm, setShowEditForm] = useState(false)
+  const [polls, setPolls] = useState([])
+  const [showPollForm, setShowPollForm] = useState(false)
+
+  const selectedEpisode = Number(episodeNumber)
+  const currentPostId = posts.find((p) => p.episode_number === selectedEpisode)?.id
 
   useEffect(() => {
     let cancelled = false
@@ -133,6 +141,24 @@ function EpisodeRecapPage() {
     }
   }, [seasonNumber])
 
+  useEffect(() => {
+    if (!currentPostId) {
+      setPolls([])
+      return
+    }
+    let cancelled = false
+    fetchPolls(currentPostId)
+      .then((data) => {
+        if (!cancelled) setPolls(data)
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err.message)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [currentPostId])
+
   if (loading) {
     return (
       <div className={styles.recapPage}>
@@ -152,7 +178,6 @@ function EpisodeRecapPage() {
     )
   }
 
-  const selectedEpisode = Number(episodeNumber)
   const post = posts.find((p) => p.episode_number === selectedEpisode)
   const blueskyMemes = post?.memes.filter((m) => m.bluesky_url) ?? []
   const imageMemes = post?.memes.filter((m) => !m.bluesky_url) ?? []
@@ -181,6 +206,25 @@ function EpisodeRecapPage() {
     }
   }
 
+  function handlePollCreated(poll) {
+    setPolls((prev) => [...prev, poll])
+    setShowPollForm(false)
+  }
+
+  function handlePollVoted(updatedPoll) {
+    setPolls((prev) => prev.map((p) => (p.id === updatedPoll.id ? updatedPoll : p)))
+  }
+
+  async function handlePollDelete(poll) {
+    if (!window.confirm('Remove this poll?')) return
+    try {
+      await deletePoll(poll.id)
+      setPolls((prev) => prev.filter((p) => p.id !== poll.id))
+    } catch (err) {
+      window.alert(`Could not remove poll: ${err.message}`)
+    }
+  }
+
   return (
     <div className={styles.recapPage}>
       <div className={styles.header}>
@@ -204,11 +248,11 @@ function EpisodeRecapPage() {
         {!post ? (
           <div className={styles.empty}>
             <p>No recap posted for Episode {selectedEpisode} yet.</p>
-            {user.admin && <button onClick={() => setShowEditForm(true)}>Create Recap</button>}
+            {user?.admin && <button onClick={() => setShowEditForm(true)}>Create Recap</button>}
           </div>
         ) : (
           <>
-            {user.admin && (
+            {user?.admin && (
               <button className={styles.editButton} onClick={() => setShowEditForm(true)}>
                 Edit Recap
               </button>
@@ -235,7 +279,7 @@ function EpisodeRecapPage() {
               <div className={styles.blueskyList}>
                 {blueskyMemes.map((meme) => (
                   <div className={styles.blueskyCard} key={meme.id}>
-                    {user.admin && (
+                    {user?.admin && (
                       <button
                         className={styles.removeMeme}
                         onClick={() => handleMemeDelete(meme)}
@@ -256,7 +300,7 @@ function EpisodeRecapPage() {
               <div className={styles.memeGrid}>
                 {imageMemes.map((meme) => (
                   <div className={styles.memeCard} key={meme.id}>
-                    {user.admin && (
+                    {user?.admin && (
                       <button
                         className={styles.removeMeme}
                         onClick={() => handleMemeDelete(meme)}
@@ -278,7 +322,32 @@ function EpisodeRecapPage() {
               </div>
             )}
 
-            {user.admin && <AddMemeForm episodePostId={post.id} onAdded={handleMemeAdded} />}
+            <div className={styles.polls}>
+              {polls.map((poll) => (
+                <Poll
+                  key={poll.id}
+                  poll={poll}
+                  isAdmin={user?.admin}
+                  canVote={Boolean(user)}
+                  onVoted={handlePollVoted}
+                  onDelete={handlePollDelete}
+                />
+              ))}
+
+              {user?.admin && !showPollForm && (
+                <button onClick={() => setShowPollForm(true)}>+ Add Poll</button>
+              )}
+
+              {user?.admin && showPollForm && (
+                <PollForm
+                  episodePostId={post.id}
+                  onCreated={handlePollCreated}
+                  onCancel={() => setShowPollForm(false)}
+                />
+              )}
+            </div>
+
+            {user?.admin && <AddMemeForm episodePostId={post.id} onAdded={handleMemeAdded} />}
           </>
         )}
       </div>

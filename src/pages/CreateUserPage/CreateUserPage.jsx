@@ -1,9 +1,12 @@
 import { useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import styles from '../Auth.module.css'
 
-function CreateUserPage({ onSwitchToLogin }) {
+function CreateUserPage() {
   const { signup } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [username, setUsername] = useState('')
@@ -19,6 +22,7 @@ function CreateUserPage({ onSwitchToLogin }) {
     setSubmitting(true)
     try {
       await signup({ email, password, passwordConfirmation, username, firstName, lastName })
+      navigate(location.state?.from?.pathname ?? '/', { replace: true })
     } catch (err) {
       setError(err.message)
     } finally {
@@ -90,9 +94,9 @@ function CreateUserPage({ onSwitchToLogin }) {
 
       <p>
         Already have an account?{' '}
-        <button type="button" className="link-button" onClick={onSwitchToLogin}>
+        <Link className="link-button" to="/login" state={location.state}>
           Log in
-        </button>
+        </Link>
       </p>
     </div>
   )

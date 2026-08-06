@@ -1,9 +1,12 @@
 import { useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import styles from '../Auth.module.css'
 
-function LoginPage({ onSwitchToSignup }) {
+function LoginPage() {
   const { login } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -15,6 +18,7 @@ function LoginPage({ onSwitchToSignup }) {
     setSubmitting(true)
     try {
       await login(email, password)
+      navigate(location.state?.from?.pathname ?? '/', { replace: true })
     } catch (err) {
       setError(err.message)
     } finally {
@@ -54,9 +58,9 @@ function LoginPage({ onSwitchToSignup }) {
 
       <p>
         Need an account?{' '}
-        <button type="button" className="link-button" onClick={onSwitchToSignup}>
+        <Link className="link-button" to="/signup" state={location.state}>
           Create one
-        </button>
+        </Link>
       </p>
     </div>
   )
