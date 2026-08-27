@@ -19,7 +19,12 @@ function ContestantCard({ contestant, selections, onToggle, isAdmin, onEdit, onD
   const goldenGooseDisabled = picksLocked || isMaleSelected || isFemaleSelected
   const embedUrl = toEmbedUrl(contestant.video_url)
 
-  const details = [contestant.tribename, contestant.occupation, contestant.age && `Age ${contestant.age}`]
+  const details = [
+    contestant.tribename,
+    contestant.occupation,
+    contestant.current_city,
+    contestant.age && `Age ${contestant.age}`,
+  ]
     .filter(Boolean)
     .join(' · ')
 

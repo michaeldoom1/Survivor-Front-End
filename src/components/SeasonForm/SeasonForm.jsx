@@ -17,6 +17,7 @@ function SeasonForm({ season, onSaved, onCancel }) {
 
   const [number, setNumber] = useState(season?.number ?? '')
   const [startAirDate, setStartAirDate] = useState(toDatetimeLocalValue(season?.start_air_date))
+  const [castVideoUrl, setCastVideoUrl] = useState(season?.cast_video_url ?? '')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
@@ -31,6 +32,7 @@ function SeasonForm({ season, onSaved, onCancel }) {
         // treats it as local time; toISOString() then converts that to a
         // proper UTC instant to send to the backend.
         start_air_date: startAirDate ? new Date(startAirDate).toISOString() : null,
+        cast_video_url: castVideoUrl || null,
       }
       const saved = isEditing ? await updateSeason(season.id, payload) : await createSeason(payload)
       onSaved(saved)
@@ -62,6 +64,15 @@ function SeasonForm({ season, onSaved, onCancel }) {
           type="datetime-local"
           value={startAirDate}
           onChange={(e) => setStartAirDate(e.target.value)}
+        />
+
+        <label htmlFor="season-cast-video-url">Meet the Cast Video URL (optional)</label>
+        <input
+          id="season-cast-video-url"
+          type="url"
+          placeholder="https://www.youtube.com/watch?v=..."
+          value={castVideoUrl}
+          onChange={(e) => setCastVideoUrl(e.target.value)}
         />
 
         {error && <p className="auth-error">{error}</p>}

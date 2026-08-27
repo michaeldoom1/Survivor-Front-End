@@ -33,6 +33,24 @@
   color: #d33;
 }
 
+.castVideo {
+  margin-bottom: 24px;
+}
+
+.castVideo h2 {
+  font-size: 1.1rem;
+  margin: 0 0 12px;
+}
+
+.castVideo iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border: none;
+  border-radius: 8px;
+}
+
 .banner {
   border: 1px solid #4a7dff;
   background: rgba(74, 125, 255, 0.1);

@@ -5,6 +5,7 @@ import { fetchSeasons, deleteSeason } from '../../api/seasons'
 import { fetchContestants, deleteContestant } from '../../api/contestants'
 import { fetchMyPicks, createPick, updatePick } from '../../api/picks'
 import ContestantCard from './ContestantCard'
+import { toEmbedUrl } from './videoEmbed'
 import ContestantForm from '../../components/ContestantForm/ContestantForm'
 import SeasonForm from '../../components/SeasonForm/SeasonForm'
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog'
@@ -121,6 +122,7 @@ function PicksPage() {
     }
   }
 
+  const castVideoEmbedUrl = toEmbedUrl(season?.cast_video_url)
   const picksLocked = !season?.start_air_date || now >= new Date(season.start_air_date)
   const canSubmit =
     !picksLocked &&
@@ -180,6 +182,17 @@ function PicksPage() {
       </div>
 
       {deleteSeasonError && <p className="auth-error">{deleteSeasonError}</p>}
+
+      {castVideoEmbedUrl && (
+        <div className={styles.castVideo}>
+          <h2>Meet the Season {season.number} Contestants</h2>
+          <iframe
+            src={castVideoEmbedUrl}
+            title={`Meet the Season ${season.number} Contestants`}
+            allowFullScreen
+          />
+        </div>
+      )}
 
       {myPick && (
         <div className={styles.banner}>

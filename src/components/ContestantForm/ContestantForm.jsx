@@ -10,6 +10,7 @@ function ContestantForm({ seasons, contestant, onSaved, onCancel }) {
   const [seasonId, setSeasonId] = useState(contestant?.season_id ?? seasons[0]?.id ?? '')
   const [tribename, setTribename] = useState(contestant?.tribename ?? '')
   const [occupation, setOccupation] = useState(contestant?.occupation ?? '')
+  const [currentCity, setCurrentCity] = useState(contestant?.current_city ?? '')
   const [age, setAge] = useState(contestant?.age ?? '')
   const [photoUrl, setPhotoUrl] = useState(contestant?.photo_url ?? '')
   const [videoUrl, setVideoUrl] = useState(contestant?.video_url ?? '')
@@ -28,6 +29,7 @@ function ContestantForm({ seasons, contestant, onSaved, onCancel }) {
         season_id: seasonId,
         tribename: tribename || null,
         occupation: occupation || null,
+        current_city: currentCity || null,
         age: age || null,
         photo_url: photoUrl || null,
         video_url: videoUrl || null,
@@ -70,6 +72,9 @@ function ContestantForm({ seasons, contestant, onSaved, onCancel }) {
 
         <label htmlFor="contestant-occupation">Occupation</label>
         <input id="contestant-occupation" value={occupation} onChange={(e) => setOccupation(e.target.value)} />
+
+        <label htmlFor="contestant-current-city">Current City</label>
+        <input id="contestant-current-city" value={currentCity} onChange={(e) => setCurrentCity(e.target.value)} />
 
         <label htmlFor="contestant-age">Age</label>
         <input id="contestant-age" type="number" min="1" value={age} onChange={(e) => setAge(e.target.value)} />
