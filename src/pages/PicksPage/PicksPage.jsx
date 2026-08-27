@@ -17,6 +17,18 @@ const EMPTY_SELECTIONS = {
   golden_goose_contestant_id: null,
 }
 
+// Tribes aren't assigned until later in the season, so tribename starts out
+// null for everyone — sort those contestants to the end (by name) rather
+// than letting them scatter to the top ahead of already-tribed contestants.
+function compareContestants(a, b) {
+  if (a.tribename !== b.tribename) {
+    if (!a.tribename) return 1
+    if (!b.tribename) return -1
+    return a.tribename.localeCompare(b.tribename)
+  }
+  return a.name.localeCompare(b.name)
+}
+
 function PicksPage() {
   const { seasonNumber } = useParams()
   const navigate = useNavigate()
@@ -122,6 +134,7 @@ function PicksPage() {
     }
   }
 
+  const sortedContestants = [...contestants].sort(compareContestants)
   const castVideoEmbedUrl = toEmbedUrl(season?.cast_video_url)
   const picksLocked = !season?.start_air_date || now >= new Date(season.start_air_date)
   const canSubmit =
@@ -213,7 +226,7 @@ function PicksPage() {
       {contestants.length === 0 && <p>No contestants have been announced for this season yet.</p>}
 
       <div className={styles.cardList}>
-        {contestants.map((contestant) => (
+        {sortedContestants.map((contestant) => (
           <ContestantCard
             key={contestant.id}
             contestant={contestant}
