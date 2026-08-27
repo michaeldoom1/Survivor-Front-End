@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { fetchScoringEvents } from '../../api/scoringEvents'
 import styles from './RulesPage.module.css'
 
@@ -61,6 +61,10 @@ function RulesPage() {
           </section>
         </div>
       )}
+
+      <p className={styles.paySummary}>
+        Ready to join in? <Link to="/pay">Pay the league fee</Link>.
+      </p>
     </div>
   )
 }

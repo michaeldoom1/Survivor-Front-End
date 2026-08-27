@@ -8,6 +8,7 @@ import CreateUserPage from './pages/CreateUserPage/CreateUserPage'
 import SeasonsPage from './pages/SeasonsPage/SeasonsPage'
 import PicksPage from './pages/PicksPage/PicksPage'
 import RulesPage from './pages/RulesPage/RulesPage'
+import PayLeagueFeePage from './pages/PayLeagueFeePage/PayLeagueFeePage'
 import ScoresPage from './pages/ScoresPage/ScoresPage'
 import EpisodeRecapPage from './pages/EpisodeRecapPage/EpisodeRecapPage'
 import ScoreEntryPage from './pages/ScoreEntryPage/ScoreEntryPage'
@@ -47,6 +48,7 @@ function AppRoutes() {
         }
       />
       <Route path="/rules" element={<RulesPage />} />
+      <Route path="/pay" element={<PayLeagueFeePage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

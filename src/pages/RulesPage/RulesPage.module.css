@@ -28,6 +28,11 @@
   margin: 0 0 20px;
 }
 
+.paySummary {
+  text-align: left;
+  margin: 24px 0 0;
+}
+
 .columns {
   display: flex;
   flex-wrap: wrap;

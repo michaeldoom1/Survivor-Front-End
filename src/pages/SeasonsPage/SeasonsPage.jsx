@@ -53,11 +53,13 @@ function SeasonsPage() {
               <span>{user.first_name} {user.last_name}</span>
               <button onClick={() => setShowEditProfile(true)}>Edit Profile</button>
               <button onClick={() => navigate('/rules')}>Rules</button>
+              <button onClick={() => navigate('/pay')}>Pay League Fee</button>
               <button onClick={logout}>Log Out</button>
             </>
           ) : (
             <>
               <button onClick={() => navigate('/rules')}>Rules</button>
+              <button onClick={() => navigate('/pay')}>Pay League Fee</button>
               <button onClick={() => navigate('/login')}>Log In</button>
             </>
           )}
