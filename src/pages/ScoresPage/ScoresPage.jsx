@@ -139,6 +139,12 @@ function ScoresPage() {
   const seasonHasStarted = Boolean(season.start_air_date) && new Date(season.start_air_date) <= new Date()
   const sortedStandings = [...standings].sort((a, b) => b.total_points - a.total_points)
 
+  // Standard competition ranking: tied users share a rank, and the next
+  // rank skips ahead by the number tied (e.g. 1, 2, 2, 4).
+  const standingRanks = sortedStandings.map((standing) =>
+    sortedStandings.findIndex((s) => s.total_points === standing.total_points) + 1,
+  )
+
   return (
     <div className={styles.scoresPage}>
       <div className={styles.header}>
@@ -188,6 +194,7 @@ function ScoresPage() {
           <table className={styles.standingsTable}>
             <thead>
               <tr>
+                <th>Rank</th>
                 <th className={styles.nameHeader}>User</th>
                 <th>Male Pick</th>
                 <th>Female Pick</th>
@@ -196,8 +203,9 @@ function ScoresPage() {
               </tr>
             </thead>
             <tbody>
-              {sortedStandings.map((standing) => (
+              {sortedStandings.map((standing, index) => (
                 <tr key={standing.user_id}>
+                  <td>{standingRanks[index]}</td>
                   <td className={styles.nameCell}>{standing.user_name}</td>
                   <td>
                     {standing.male_contestant.name} ({standing.male_contestant.points})
