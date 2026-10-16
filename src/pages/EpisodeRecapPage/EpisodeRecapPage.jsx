@@ -8,12 +8,41 @@ import { createMeme, deleteMeme } from '../../api/memes'
 import { fetchPolls, deletePoll } from '../../api/polls'
 import EpisodePostForm from '../../components/EpisodePostForm/EpisodePostForm'
 import BlueskyEmbed from '../../components/BlueskyEmbed/BlueskyEmbed'
+import XEmbed from '../../components/XEmbed/XEmbed'
+import RedditEmbed from '../../components/RedditEmbed/RedditEmbed'
 import Poll from '../../components/Poll/Poll'
 import PollForm from '../../components/PollForm/PollForm'
 import styles from './EpisodeRecapPage.module.css'
 
+const EMBED_FIELDS = ['bluesky_url', 'x_url', 'reddit_url']
+
+// Works out which embed field a pasted post link belongs in, or null if it
+// isn't from a site we can embed.
+function embedFieldFor(postUrl) {
+  let host
+  try {
+    host = new URL(postUrl).hostname.toLowerCase()
+  } catch {
+    return null
+  }
+  if (host === 'bsky.app') return 'bluesky_url'
+  if (['x.com', 'www.x.com', 'twitter.com', 'www.twitter.com', 'mobile.twitter.com'].includes(host)) return 'x_url'
+  if (host === 'reddit.com' || host.endsWith('.reddit.com')) return 'reddit_url'
+  return null
+}
+
+function embedUrlOf(meme) {
+  return meme.bluesky_url || meme.x_url || meme.reddit_url
+}
+
+function MemeEmbed({ meme }) {
+  if (meme.bluesky_url) return <BlueskyEmbed postUrl={meme.bluesky_url} />
+  if (meme.x_url) return <XEmbed postUrl={meme.x_url} />
+  return <RedditEmbed postUrl={meme.reddit_url} />
+}
+
 function AddMemeForm({ episodePostId, onAdded }) {
-  const [blueskyUrl, setBlueskyUrl] = useState('')
+  const [postUrl, setPostUrl] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const [caption, setCaption] = useState('')
   const [sourceUrl, setSourceUrl] = useState('')
@@ -23,17 +52,22 @@ function AddMemeForm({ episodePostId, onAdded }) {
   async function handleSubmit(event) {
     event.preventDefault()
     setError('')
+    const embedField = postUrl ? embedFieldFor(postUrl) : null
+    if (postUrl && !embedField) {
+      setError('Post links must be from Bluesky, X, or Reddit.')
+      return
+    }
     setSubmitting(true)
     try {
       const meme = await createMeme({
         episode_post_id: episodePostId,
-        bluesky_url: blueskyUrl || null,
-        image_url: blueskyUrl ? null : imageUrl,
+        ...Object.fromEntries(EMBED_FIELDS.map((field) => [field, field === embedField ? postUrl : null])),
+        image_url: postUrl ? null : imageUrl,
         caption: caption || null,
         source_url: sourceUrl || null,
       })
       onAdded(meme)
-      setBlueskyUrl('')
+      setPostUrl('')
       setImageUrl('')
       setCaption('')
       setSourceUrl('')
@@ -48,15 +82,15 @@ function AddMemeForm({ episodePostId, onAdded }) {
     <form className={styles.addMemeForm} onSubmit={handleSubmit}>
       <h3>Add a Meme</h3>
 
-      <label htmlFor="meme-bluesky-url">Bluesky post URL</label>
+      <label htmlFor="meme-post-url">Bluesky, X, or Reddit post URL</label>
       <input
-        id="meme-bluesky-url"
+        id="meme-post-url"
         type="url"
-        placeholder="https://bsky.app/profile/handle/post/..."
-        value={blueskyUrl}
-        onChange={(e) => setBlueskyUrl(e.target.value)}
+        placeholder="https://x.com/handle/status/..."
+        value={postUrl}
+        onChange={(e) => setPostUrl(e.target.value)}
       />
-      <p className={styles.hint}>Paste a Bluesky post link and it embeds live — image, text, and all.</p>
+      <p className={styles.hint}>Paste a Bluesky, X, or Reddit post link and it embeds live — image, text, and all.</p>
 
       <div className={styles.formDivider}>or add an image directly</div>
 
@@ -66,7 +100,7 @@ function AddMemeForm({ episodePostId, onAdded }) {
           placeholder="Image URL"
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
-          disabled={Boolean(blueskyUrl)}
+          disabled={Boolean(postUrl)}
         />
         <input
           type="text"
@@ -82,7 +116,7 @@ function AddMemeForm({ episodePostId, onAdded }) {
         />
       </div>
       {error && <p className="auth-error">{error}</p>}
-      <button type="submit" disabled={submitting || (!blueskyUrl && !imageUrl)}>
+      <button type="submit" disabled={submitting || (!postUrl && !imageUrl)}>
         {submitting ? 'Adding...' : 'Add to the wall'}
       </button>
     </form>
@@ -179,8 +213,8 @@ function EpisodeRecapPage() {
   }
 
   const post = posts.find((p) => p.episode_number === selectedEpisode)
-  const blueskyMemes = post?.memes.filter((m) => m.bluesky_url) ?? []
-  const imageMemes = post?.memes.filter((m) => !m.bluesky_url) ?? []
+  const embedMemes = post?.memes.filter((m) => embedUrlOf(m)) ?? []
+  const imageMemes = post?.memes.filter((m) => !embedUrlOf(m)) ?? []
 
   function handlePostSaved(savedPost) {
     setPosts((prev) => {
@@ -302,9 +336,9 @@ function EpisodeRecapPage() {
               </div>
             )}
 
-            {blueskyMemes.length > 0 && (
+            {embedMemes.length > 0 && (
               <div className={styles.blueskyList}>
-                {blueskyMemes.map((meme) => (
+                {embedMemes.map((meme) => (
                   <div className={styles.blueskyCard} key={meme.id}>
                     {user?.admin && (
                       <button
@@ -316,7 +350,7 @@ function EpisodeRecapPage() {
                         ×
                       </button>
                     )}
-                    <BlueskyEmbed postUrl={meme.bluesky_url} />
+                    <MemeEmbed meme={meme} />
                     {meme.caption && <p className={styles.memeCaption}>{meme.caption}</p>}
                   </div>
                 ))}
