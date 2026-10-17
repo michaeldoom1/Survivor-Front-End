@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { MAX_HIGHLIGHTED } from './chartTheme'
+import { MAX_HIGHLIGHTED, SLOT_MARKERS } from './chartTheme'
 import styles from './SeasonCharts.module.css'
 
 // Give each newly highlighted series the lowest free color slot, so series
@@ -18,6 +18,43 @@ function assignSlots(ids, existing = {}) {
   return slots
 }
 
+// The line swatch used in the name buttons and tooltip. Marker slots show
+// their marker on the swatch too, so the key matches the line.
+function SeriesKey({ slot, palette }) {
+  const color = slot === undefined ? palette.muted : palette.series[slot]
+  const marker = SLOT_MARKERS[slot]
+  return (
+    <span className={styles.lineKey} style={{ background: color }}>
+      {marker && (
+        <span
+          className={styles.keyMarker}
+          style={{ background: color, borderRadius: marker === 'circle' ? '50%' : '1px' }}
+        />
+      )}
+    </span>
+  )
+}
+
+function markerDot(marker, color, surface) {
+  return function MarkerDot({ cx, cy, index }) {
+    if (cx == null || cy == null) return <g key={index} />
+    return marker === 'circle' ? (
+      <circle key={index} cx={cx} cy={cy} r={4} fill={color} stroke={surface} strokeWidth={1.5} />
+    ) : (
+      <rect
+        key={index}
+        x={cx - 3.5}
+        y={cy - 3.5}
+        width={7}
+        height={7}
+        fill={color}
+        stroke={surface}
+        strokeWidth={1.5}
+      />
+    )
+  }
+}
+
 function RaceTooltip({ active, label, series, episodeIndex, slots, palette }) {
   if (!active || label === undefined) return null
   const index = episodeIndex[label]
@@ -33,10 +70,7 @@ function RaceTooltip({ active, label, series, episodeIndex, slots, palette }) {
           const highlighted = slots[s.id] !== undefined
           return (
             <li key={s.id} className={highlighted ? styles.tooltipHighlighted : undefined}>
-              <span
-                className={styles.lineKey}
-                style={{ background: highlighted ? palette.series[slots[s.id]] : palette.muted }}
-              />
+              <SeriesKey slot={slots[s.id]} palette={palette} />
               <span className={styles.tooltipValue}>{points}</span>
               <span className={styles.tooltipLabel}>
                 {s.name}
@@ -55,7 +89,19 @@ function RaceTooltip({ active, label, series, episodeIndex, slots, palette }) {
 // the season and values[i] the total after the i-th episode. A series with
 // an exitIndex is drawn dashed from that point on.
 // presets: extra highlight shortcuts, [{ label, ids }].
-function RaceChart({ title, note, series, episodeNumbers, presets = [], defaultHighlightIds, noun, palette }) {
+// controls: optional extra controls rendered above the highlight row.
+function RaceChart({
+  title,
+  note,
+  controls,
+  emptyMessage,
+  series,
+  episodeNumbers,
+  presets = [],
+  defaultHighlightIds,
+  noun,
+  palette,
+}) {
   const lastIndex = episodeNumbers.length
   const byCurrentTotal = [...series].sort((a, b) => b.values[lastIndex] - a.values[lastIndex])
 
@@ -108,7 +154,8 @@ function RaceChart({ title, note, series, episodeNumbers, presets = [], defaultH
       strokeWidth: hovered ? 3 : highlighted ? 2.5 : 1.5,
       strokeOpacity: highlighted || hovered ? 1 : 0.7,
       strokeDasharray: phase === 'out' ? '4 4' : undefined,
-      dot: false,
+      dot:
+        highlighted && SLOT_MARKERS[slots[s.id]] ? markerDot(SLOT_MARKERS[slots[s.id]], color, palette.surface) : false,
       activeDot: false,
       connectNulls: false,
       isAnimationActive: false,
@@ -120,82 +167,87 @@ function RaceChart({ title, note, series, episodeNumbers, presets = [], defaultH
       <h3>{title}</h3>
       <p className={styles.chartNote}>{note}</p>
 
-      <div className={styles.chartControls}>
-        <span className={styles.controlLabel}>Highlight:</span>
-        <button className={styles.presetButton} onClick={() => setSlots(assignSlots(topFiveIds()))}>
-          Top 5
-        </button>
-        {presets
-          .filter((preset) => preset.ids.length > 0)
-          .map((preset) => (
-            <button
-              key={preset.label}
-              className={styles.presetButton}
-              onClick={() => setSlots(assignSlots(preset.ids))}
-            >
-              {preset.label}
-            </button>
-          ))}
-        <button className={styles.presetButton} onClick={() => setSlots({})}>
-          Clear
-        </button>
-      </div>
+      {controls}
 
-      <div className={styles.chipRow}>
-        {byCurrentTotal.map((s) => {
-          const highlighted = slots[s.id] !== undefined
-          const full = !highlighted && highlightedCount >= MAX_HIGHLIGHTED
-          return (
-            <button
-              key={s.id}
-              className={`${styles.chip} ${highlighted ? styles.chipActive : ''}`}
-              aria-pressed={highlighted}
-              disabled={full}
-              title={full ? `Up to ${MAX_HIGHLIGHTED} ${noun} can be highlighted at once` : undefined}
-              onClick={() => toggle(s.id)}
-              onMouseEnter={() => setHoveredId(s.id)}
-              onMouseLeave={() => setHoveredId(null)}
-              onFocus={() => setHoveredId(s.id)}
-              onBlur={() => setHoveredId(null)}
-            >
-              <span
-                className={styles.lineKey}
-                style={{ background: highlighted ? palette.series[slots[s.id]] : palette.muted }}
+      {series.length === 0 ? (
+        <p className={styles.chartNote}>{emptyMessage}</p>
+      ) : (
+        <>
+          <div className={styles.chartControls}>
+            <span className={styles.controlLabel}>Highlight:</span>
+            <button className={styles.presetButton} onClick={() => setSlots(assignSlots(topFiveIds()))}>
+              Top 5
+            </button>
+            {presets
+              .filter((preset) => preset.ids.length > 0)
+              .map((preset) => (
+                <button
+                  key={preset.label}
+                  className={styles.presetButton}
+                  onClick={() => setSlots(assignSlots(preset.ids))}
+                >
+                  {preset.label}
+                </button>
+              ))}
+            <button className={styles.presetButton} onClick={() => setSlots({})}>
+              Clear
+            </button>
+          </div>
+
+          <div className={styles.chipRow}>
+            {byCurrentTotal.map((s) => {
+              const highlighted = slots[s.id] !== undefined
+              const full = !highlighted && highlightedCount >= MAX_HIGHLIGHTED
+              return (
+                <button
+                  key={s.id}
+                  className={`${styles.chip} ${highlighted ? styles.chipActive : ''}`}
+                  aria-pressed={highlighted}
+                  disabled={full}
+                  title={full ? `Up to ${MAX_HIGHLIGHTED} ${noun} can be highlighted at once` : undefined}
+                  onClick={() => toggle(s.id)}
+                  onMouseEnter={() => setHoveredId(s.id)}
+                  onMouseLeave={() => setHoveredId(null)}
+                  onFocus={() => setHoveredId(s.id)}
+                  onBlur={() => setHoveredId(null)}
+                >
+                  <SeriesKey slot={slots[s.id]} palette={palette} />
+                  {s.name}
+                  <span className={styles.chipValue}>{s.values[lastIndex]}</span>
+                </button>
+              )
+            })}
+          </div>
+
+          <ResponsiveContainer width="100%" height={420}>
+            <LineChart data={data} margin={{ top: 8, right: 16, bottom: 8, left: 0 }}>
+              <CartesianGrid stroke={palette.grid} vertical={false} />
+              <XAxis
+                dataKey="episode"
+                tickFormatter={(ep) => (ep === 0 ? 'Start' : `Ep ${ep}`)}
+                stroke={palette.axis}
+                tick={{ fill: palette.axis, fontSize: 12 }}
+                tickLine={false}
               />
-              {s.name}
-              <span className={styles.chipValue}>{s.values[lastIndex]}</span>
-            </button>
-          )
-        })}
-      </div>
-
-      <ResponsiveContainer width="100%" height={420}>
-        <LineChart data={data} margin={{ top: 8, right: 16, bottom: 8, left: 0 }}>
-          <CartesianGrid stroke={palette.grid} vertical={false} />
-          <XAxis
-            dataKey="episode"
-            tickFormatter={(ep) => (ep === 0 ? 'Start' : `Ep ${ep}`)}
-            stroke={palette.axis}
-            tick={{ fill: palette.axis, fontSize: 12 }}
-            tickLine={false}
-          />
-          <YAxis
-            stroke={palette.axis}
-            tick={{ fill: palette.axis, fontSize: 12 }}
-            tickLine={false}
-            axisLine={false}
-            width={40}
-          />
-          <Tooltip
-            cursor={{ stroke: palette.axis, strokeWidth: 1 }}
-            content={<RaceTooltip series={series} episodeIndex={episodeIndex} slots={slots} palette={palette} />}
-          />
-          {drawOrder.map((s) => [
-            <Line key={`out-${s.id}`} {...lineProps(s, 'out')} />,
-            <Line key={`in-${s.id}`} {...lineProps(s, 'in')} />,
-          ])}
-        </LineChart>
-      </ResponsiveContainer>
+              <YAxis
+                stroke={palette.axis}
+                tick={{ fill: palette.axis, fontSize: 12 }}
+                tickLine={false}
+                axisLine={false}
+                width={40}
+              />
+              <Tooltip
+                cursor={{ stroke: palette.axis, strokeWidth: 1 }}
+                content={<RaceTooltip series={series} episodeIndex={episodeIndex} slots={slots} palette={palette} />}
+              />
+              {drawOrder.map((s) => [
+                <Line key={`out-${s.id}`} {...lineProps(s, 'out')} />,
+                <Line key={`in-${s.id}`} {...lineProps(s, 'in')} />,
+              ])}
+            </LineChart>
+          </ResponsiveContainer>
+        </>
+      )}
     </div>
   )
 }
