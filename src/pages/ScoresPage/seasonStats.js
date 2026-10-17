@@ -1,3 +1,6 @@
+// Matches PicksController::GOLDEN_GOOSE_MULTIPLIER on the back end.
+export const GOLDEN_GOOSE_MULTIPLIER = 2
+
 export const EXIT_EVENTS = ['Getting voted out', 'Medical evacuation', 'Losing a fire-making challenge']
 
 export function exitEpisode(contestant) {

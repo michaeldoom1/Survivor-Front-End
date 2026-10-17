@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
 import { useAuth } from '../../../context/AuthContext'
 import { useTheme } from '../../../context/ThemeContext'
-import { exitEpisode, pickCounts } from '../seasonStats'
+import { cumulativeTotals, exitEpisode, pickCounts } from '../seasonStats'
 import { chartPalette } from './chartTheme'
+import LeagueRaceChart from './LeagueRaceChart'
 import PickPopularityChart from './PickPopularityChart'
 import PointsRaceChart from './PointsRaceChart'
 import PopularityVsPointsChart from './PopularityVsPointsChart'
@@ -23,6 +24,7 @@ function SeasonCharts({ contestants, standings, episodeNumbers }) {
 
   const exits = useMemo(() => Object.fromEntries(contestants.map((c) => [c.id, exitEpisode(c)])), [contestants])
   const counts = useMemo(() => pickCounts(standings), [standings])
+  const totals = useMemo(() => cumulativeTotals(contestants, episodeNumbers), [contestants, episodeNumbers])
 
   // These filters scope every chart below them.
   const visible = contestants.filter(
@@ -55,6 +57,16 @@ function SeasonCharts({ contestants, standings, episodeNumbers }) {
     <section className={styles.seasonCharts}>
       <h2>Season Stats</h2>
 
+      {hasScores && hasPicks && (
+        <LeagueRaceChart
+          standings={standings}
+          totals={totals}
+          episodeNumbers={episodeNumbers}
+          myUserId={user?.id}
+          palette={palette}
+        />
+      )}
+
       <div className={styles.filterRow}>
         <div className={styles.segmented} role="group" aria-label="Filter by gender">
           {GENDERS.map((g) => (
@@ -77,7 +89,7 @@ function SeasonCharts({ contestants, standings, episodeNumbers }) {
       {hasScores && (
         <PointsRaceChart
           contestants={visible}
-          allContestants={contestants}
+          totals={totals}
           episodeNumbers={episodeNumbers}
           exits={exits}
           myPickIds={myPickIds}
