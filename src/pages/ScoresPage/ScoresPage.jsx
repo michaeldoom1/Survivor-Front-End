@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { Suspense, lazy, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { fetchSeasons, deleteSeason } from '../../api/seasons'
@@ -7,7 +7,11 @@ import { fetchPicksBySeason } from '../../api/picks'
 import EpisodeDetailModal from './EpisodeDetailModal'
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog'
 import SeasonForm from '../../components/SeasonForm/SeasonForm'
+import { exitEpisode } from './seasonStats'
 import styles from './ScoresPage.module.css'
+
+// Charts pull in Recharts, so load them only when a scores page is opened.
+const SeasonCharts = lazy(() => import('./charts/SeasonCharts'))
 
 function ScoresPage() {
   const { seasonNumber } = useParams()
@@ -98,12 +102,6 @@ function ScoresPage() {
       setDeleteSeasonError(err.message)
       setDeletingSeason(false)
     }
-  }
-
-  const EXIT_EVENTS = ['Getting voted out', 'Medical evacuation', 'Losing a fire-making challenge']
-
-  function exitEpisode(contestant) {
-    return contestant.episode_scores.find((es) => EXIT_EVENTS.includes(es.scoring_event))?.episode_number ?? null
   }
 
   function winEpisode(contestant) {
@@ -277,6 +275,14 @@ function ScoresPage() {
           </table>
         </div>
       )}
+
+      <Suspense fallback={null}>
+        <SeasonCharts
+          contestants={contestants}
+          standings={seasonHasStarted ? standings : []}
+          episodeNumbers={episodeNumbers}
+        />
+      </Suspense>
 
       {selectedCell && (
         <EpisodeDetailModal
