@@ -4,6 +4,10 @@ export function fetchEpisodeScores(seasonId, episodeNumber) {
   return apiRequest(`/episode_scores?season_id=${seasonId}&episode_number=${episodeNumber}`)
 }
 
+export function fetchSeasonEpisodeScores(seasonId) {
+  return apiRequest(`/episode_scores?season_id=${seasonId}`)
+}
+
 export function createEpisodeScore(episodeScore) {
   return apiRequest('/episode_scores', {
     method: 'POST',

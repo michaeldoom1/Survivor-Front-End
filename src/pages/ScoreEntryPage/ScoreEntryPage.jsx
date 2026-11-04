@@ -5,11 +5,12 @@ import { fetchSeasons } from '../../api/seasons'
 import { fetchContestants } from '../../api/contestants'
 import { fetchScoringEvents } from '../../api/scoringEvents'
 import {
-  fetchEpisodeScores,
+  fetchSeasonEpisodeScores,
   createEpisodeScore,
   updateEpisodeScore,
   deleteEpisodeScore,
 } from '../../api/episodeScores'
+import { EXIT_EVENTS } from '../ScoresPage/seasonStats'
 import styles from './ScoreEntryPage.module.css'
 
 function ScoreEntryPage() {
@@ -20,6 +21,7 @@ function ScoreEntryPage() {
   const [contestants, setContestants] = useState([])
   const [scoringEvents, setScoringEvents] = useState([])
   const [scores, setScores] = useState([])
+  const [exitEpisodes, setExitEpisodes] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [savingKey, setSavingKey] = useState(null)
@@ -44,15 +46,23 @@ function ScoreEntryPage() {
         return Promise.all([
           fetchContestants(),
           fetchScoringEvents(),
-          fetchEpisodeScores(matchedSeason.id, selectedEpisode),
+          fetchSeasonEpisodeScores(matchedSeason.id),
         ])
       })
       .then((data) => {
         if (!data || cancelled) return
-        const [allContestants, events, episodeScores] = data
+        const [allContestants, events, seasonScores] = data
+        const exitEventIds = events.filter((e) => EXIT_EVENTS.includes(e.name)).map((e) => e.id)
+        const exits = {}
+        for (const s of seasonScores) {
+          if (exitEventIds.includes(s.scoring_event_id)) {
+            exits[s.contestant_id] = Math.min(exits[s.contestant_id] ?? Infinity, s.episode_number)
+          }
+        }
         setContestants(allContestants.filter((c) => c.season_id === matchedSeasonId))
         setScoringEvents(events)
-        setScores(episodeScores)
+        setExitEpisodes(exits)
+        setScores(seasonScores.filter((s) => s.episode_number === selectedEpisode))
       })
       .catch((err) => {
         if (!cancelled) setError(err.message)
@@ -95,6 +105,15 @@ function ScoreEntryPage() {
       </div>
     )
   }
+
+  // Anyone who left the game before this episode moves to the end (most
+  // recent exit first) so the players still in it come first. Someone who
+  // leaves in this episode stays put, since they still score this week.
+  const isOut = (c) => exitEpisodes[c.id] != null && exitEpisodes[c.id] < selectedEpisode
+  const orderedContestants = [
+    ...contestants.filter((c) => !isOut(c)),
+    ...contestants.filter(isOut).sort((a, b) => exitEpisodes[b.id] - exitEpisodes[a.id]),
+  ]
 
   function scoreFor(contestantId, scoringEventId) {
     return scores.find((s) => s.contestant_id === contestantId && s.scoring_event_id === scoringEventId)
@@ -163,8 +182,10 @@ function ScoreEntryPage() {
             <thead>
               <tr>
                 <th className={styles.eventHeader}>Scoring Event</th>
-                {contestants.map((c) => (
-                  <th key={c.id}>{c.name}</th>
+                {orderedContestants.map((c) => (
+                  <th key={c.id} className={isOut(c) ? styles.outContestant : undefined}>
+                    {c.name}
+                  </th>
                 ))}
               </tr>
             </thead>
@@ -174,7 +195,7 @@ function ScoreEntryPage() {
                   <td className={styles.eventCell}>
                     {event.name} <span className={styles.eventPoints}>({event.points > 0 ? '+' : ''}{event.points})</span>
                   </td>
-                  {contestants.map((contestant) => {
+                  {orderedContestants.map((contestant) => {
                     const existing = scoreFor(contestant.id, event.id)
                     const key = `${contestant.id}-${event.id}`
                     return (

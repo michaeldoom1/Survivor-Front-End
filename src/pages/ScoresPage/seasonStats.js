@@ -1,7 +1,12 @@
 // Matches PicksController::GOLDEN_GOOSE_MULTIPLIER on the back end.
 export const GOLDEN_GOOSE_MULTIPLIER = 2
 
-export const EXIT_EVENTS = ['Getting voted out', 'Medical evacuation', 'Losing a fire-making challenge']
+export const EXIT_EVENTS = [
+  'Getting voted out',
+  'Quitting/Removed from show',
+  'Medical evacuation',
+  'Losing a fire-making challenge',
+]
 
 export function exitEpisode(contestant) {
   return contestant.episode_scores.find((es) => EXIT_EVENTS.includes(es.scoring_event))?.episode_number ?? null
